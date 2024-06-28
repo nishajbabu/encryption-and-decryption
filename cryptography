@@ -15,3 +15,96 @@ def decrypt(ciphertext, key):
     decrypted_padded_data = decryptor.update(ciphertext) + decryptor.finalize()
     unpadder = padding.PKCS7(128).unpadder()
     return unpadder.update(decrypted_padded_data) + unpadder.finalize()
+import requests
+import json
+
+# Nessus API credentials
+nessus_url = "https://your-nessus-server.com:8834"
+nessus_api_key = "your-api-key"
+
+# Scan a target
+scan_id = "your-scan-id"
+scan_data = {"uuid": scan_id}
+response = requests.post(f"{nessus_url}/scans/{scan_id}/export", data=scan_data, headers={"X-ApiKeys": f"{nessus_api_key}", "Content-Type": "application/json"})
+
+# Parse the scan results
+results = json.loads(response.content)
+
+# Print the vulnerabilities
+for host in results["report"]["hosts"]:
+    for vulnerability in host["vulns"]:
+        print(f"Host: {host['hostname']}, Plugin ID: {vulnerability['plugin_id']}, Plugin Name: {vulnerability['plugin_name']}, Severity: {vulnerability['severity']}")
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    # Enable basic authentication
+    auth_basic "Restricted Access";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+
+    # Limit access to specific IP addresses
+    allow 192.168.1.0/24;
+    deny all;
+
+    # Serve the website
+    location / {
+        root /var/www/your-domain.com;
+        index index.html;
+    }
+}
+from Crypto.Cipher import AES
+import base64
+
+# Generate a random 256-bit key
+key = os.urandom(32)
+
+# Create a new AES cipher object
+cipher = AES.new(key, AES.MODE_EAX)
+
+# Encrypt some data
+data = b"This is some data to encrypt"
+ciphertext, tag = cipher.encrypt_and_digest(data)
+
+# Encode the ciphertext and tag in base64
+ciphertext_base64 = base64.b64encode(ciphertext)
+tag_base64 = base64.b64encode(tag)
+
+# Print the encrypted data
+print(f"Ciphertext: {ciphertext_base64}, Tag: {tag_base64}")
+# Suricata configuration file
+default-rule-path /etc/suricata/rules
+
+# Enable network traffic analysis
+rule-files detection.rules
+
+# Enable HTTP, HTTPS, and FTP protocols
+protocols http, https, ftp
+
+# Enable logging
+log-file /var/log/suricata/suricata.log
+
+# Enable alerting
+alert-mode both
+-- Nessus NSE script for port scanning
+local function port_scanner(host, port)
+    local sock = nmap.new_socket()
+    sock:set_timeout(5000)
+    local success, err = sock:connect(host, port)
+    if success then
+        return true
+    else
+        return falseend
+end
+
+-- Scan a target
+local target = "your-target-ip"
+local ports = {21, 22, 80, 443}
+
+for _, port in ipairs(ports) do
+    local result = port_scanner(target, port)
+    if result then
+        print(f"Port {port} is open on {target}")
+    else
+        print(f"Port {port} is closed on {target}")
+    end
+end
