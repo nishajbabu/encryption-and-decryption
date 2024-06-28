@@ -1,0 +1,17 @@
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+
+def encrypt(plaintext, key):
+    cipher = Cipher(algorithms.AES(key), modes.CBC(b'\00' * 16), backend=default_backend())
+    encryptor = cipher.encryptor()
+    padder = padding.PKCS7(128).padder()
+    padded_data = padder.update(plaintext) + padder.finalize()
+    return encryptor.update(padded_data) + encryptor.finalize()
+
+def decrypt(ciphertext, key):
+    cipher = Cipher(algorithms.AES(key), modes.CBC(b'\00' * 16), backend=default_backend())
+    decryptor = cipher.decryptor()
+    decrypted_padded_data = decryptor.update(ciphertext) + decryptor.finalize()
+    unpadder = padding.PKCS7(128).unpadder()
+    return unpadder.update(decrypted_padded_data) + unpadder.finalize()
